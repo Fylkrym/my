@@ -127,21 +127,34 @@ class BundesligaPredictor:
             # Сбор и обновление коэффициентов
             print("Сбор коэффициентов для предстоящих матчей...")
             
-            # Пытаемся получить реальные коэффициенты через новый модуль
-            from bookmaker_integration import collect_real_bookmaker_odds
-            from config import ODDS_DIR
+            # Пытаемся сначала получить коэффициенты через The Odds API
+            from bookmaker_integration import get_odds_from_api
+            odds_data = get_odds_from_api()
             
-            real_odds = collect_real_bookmaker_odds(ODDS_DIR)
-            
-            if real_odds:
-                print(f"Собраны реальные коэффициенты для {len(real_odds)} матчей")
-                odds_data = real_odds
+            if odds_data and len(odds_data) > 0:
+                print(f"Получены реальные коэффициенты через The Odds API для {len(odds_data)} матчей")
             else:
-                # Используем существующий метод, если реальные данные не получены
-                print("Реальные коэффициенты не получены, используем внутреннюю генерацию")
-                # Здесь вызов существующего метода
+                # Если не удалось получить через API, пробуем другие источники
+                print("Не удалось получить коэффициенты через The Odds API")
+                print("Пробуем получить коэффициенты через другие источники...")
+                
+                # Пытаемся получить реальные коэффициенты через парсер
+                try:
+                    from bookmaker_parser import BookmakerParser
+                    parser = BookmakerParser()
+                    odds_df = parser.get_all_odds()
+                    
+                    if not odds_df.empty:
+                        print(f"Получены синтетические коэффициенты для {len(odds_df)} матчей")
+                    else:
+                        print("Не удалось получить синтетические коэффициенты")
+                except Exception as e:
+                    print(f"Ошибка при получении синтетических коэффициентов: {e}")
+                    
+                # Если предыдущие методы не сработали, используем внутренний генератор коэффициентов
+                print("Используем внутренний генератор коэффициентов...")
                 odds_data = self.odds_collector.collect_odds_for_all_matches()
-                print(f"Собраны сгенерированные коэффициенты для {len(odds_data)} матчей")
+                print(f"Сгенерированы коэффициенты для {len(odds_data)} матчей")
             
             # Обновление исторических коэффициентов для анализа
             self.odds_collector.update_historical_odds()
@@ -154,7 +167,7 @@ class BundesligaPredictor:
             print(f"ОШИБКА при сборе данных: {e}")
             logger.error(f"Ошибка при сборе данных: {e}")
             traceback.print_exc()
-            return None 
+            return None
     
     def generate_predictions(self):
         """Генерирует прогнозы для предстоящих матчей"""
@@ -541,24 +554,20 @@ if __name__ == "__main__":
         print("Экземпляр предиктора создан успешно!")
         
         print("Запуск цикла анализа...")
-        print("Доступные методы в BundesligaPredictor:", [method for method in dir(predictor) if not method.startswith('_')])
-        results = predictor.collect_data()
+        results = predictor.run_full_cycle_improved()
         print("Цикл анализа завершен!")
         
         print("\n" + "=" * 30)
         print("РЕЗУЛЬТАТЫ РАБОТЫ СИСТЕМЫ")
         print("=" * 30)
         
-        # Независимо от сбора данных, пытаемся сгенерировать прогнозы
-        print("Генерация прогнозов...")
-        predictions = predictor.generate_predictions()
-        
-        if predictions:
-            print(f"Создано {len(predictions)} прогнозов")
+        if 'error' in results:
+            print(f"Произошла ошибка: {results['error']}")
+        else:
+            print(f"Создано прогнозов: {results.get('predictions_count', 0)}")
             
-            # Предложение ставок
-            suggested_bets = predictor.suggest_bets(predictions)
-            
+            # Информация о предложенных ставках
+            suggested_bets = results.get('suggested_bets', [])
             if suggested_bets:
                 print("\nПредложенные ставки:")
                 for i, bet in enumerate(suggested_bets, 1):
@@ -568,8 +577,21 @@ if __name__ == "__main__":
                     print(f"   Ожидаемые голы: {bet['home_team']} - {bet['expected_goals']['home']}, {bet['away_team']} - {bet['expected_goals']['away']}")
             else:
                 print("\nНет предложенных ставок.")
-        else:
-            print("Не удалось создать прогнозы.")
+            
+            # Информация о размещенных ставках
+            placed_bets = results.get('placed_bets', [])
+            if placed_bets:
+                print("\nРазмещенные ставки:")
+                for i, bet in enumerate(placed_bets, 1):
+                    outcome_name = "Победа хозяев" if bet['outcome'] == '1' else "Ничья" if bet['outcome'] == 'X' else "Победа гостей"
+                    print(f"{i}. {bet['date']} - {bet['home_team']} vs {bet['away_team']}")
+                    print(f"   Исход: {outcome_name}, Коэф: {bet['odds']}, Сумма: {bet['amount']}, Потенциальный выигрыш: {bet['potential_win']}")
+            else:
+                print("\nНет размещенных ставок.")
+            
+            # Информация о банке
+            print(f"\nТекущий банк: {results.get('current_bank', 0)}")
+        
     except Exception as e:
         print(f"КРИТИЧЕСКАЯ ОШИБКА ПРИ ЗАПУСКЕ: {e}")
         traceback.print_exc()
