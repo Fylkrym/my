@@ -83,3 +83,7 @@ VISUALIZATION = True
 
 # Текущий сезон
 CURRENT_SEASON = "2024"
+
+# Настройки для OpenLigaDB API
+LEAGUE_NAME = "bl1"  # Код для Бундеслиги
+OPENLIGA_API_URL = "https://api.openligadb.de"

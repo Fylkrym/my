@@ -279,6 +279,44 @@ class BundesligaAnalyzer:
         """
         if not self.team_ratings:
             self.calculate_team_ratings()
+            
+        # Если имеем реальные коэффициенты, корректируем вероятности на их основе
+        odds_file = f"{ODDS_DIR}/odds_{home_team_id}_{away_team_id}.json"
+        if os.path.exists(odds_file):
+            try:
+                with open(odds_file, 'r', encoding='utf-8') as f:
+                    odds_data = json.load(f)
+                if 'odds' in odds_data:
+                    odds = odds_data['odds']
+                    # Расчет вероятностей из коэффициентов (с учетом маржи букмекера)
+                    raw_probs = {
+                        'home': 1 / odds['1'],
+                        'draw': 1 / odds['X'],
+                        'away': 1 / odds['2']
+                    }
+                    # Убираем маржу букмекера (обычно 5-10%)
+                    total_prob = sum(raw_probs.values())
+                    margin = total_prob - 1.0
+                    
+                    if margin > 0 and total_prob > 0:
+                       # Корректируем вероятности с учетом маржи
+                        home_win_prob = raw_probs['home'] / total_prob
+                        draw_prob = raw_probs['draw'] / total_prob
+                        away_win_prob = raw_probs['away'] / total_prob 
+                        
+                        # Смешиваем с модельными вероятностями (70% вес коэффициентам букмекеров)
+                        home_win_prob = 0.7 * home_win_prob + 0.3 * home_win_prob
+                        draw_prob = 0.7 * draw_prob + 0.3 * draw_prob
+                        away_win_prob = 0.7 * away_win_prob + 0.3 * away_win_prob
+                        
+                        # Нормализуем вероятности
+                        total = home_win_prob + draw_prob + away_win_prob
+                        home_win_prob /= total
+                        draw_prob /= total
+                        away_win_prob /= total
+            except Exception as e:
+                logger.warning(f"Ошибка при чтении коэффициентов: {e}")
+         
         
         # Проверяем, есть ли рейтинги для команд
         if home_team_id not in self.team_ratings or away_team_id not in self.team_ratings:
@@ -634,7 +672,31 @@ class BundesligaAnalyzer:
                 
                 # Если коэффициенты не найдены, используем стандартные
                 if not match_odds:
+                    # Стандартные коэффициенты теперь разные для разных исходов
                     match_odds = {'1': 2.0, 'X': 3.0, '2': 4.0}
+                    
+                    # Однако, если у нас есть ожидаемые голы, корректируем коэффициенты
+                    expected_home_goals = prediction.get('expected_home_goals', 1.5)
+                    expected_away_goals = prediction.get('expected_away_goals', 1.2)
+                    
+                    # Чем выше разница в голах, тем ниже коэффициент фаворита
+                    goal_diff = expected_home_goals - expected_away_goals
+                    
+                    if goal_diff > 0.5:  # Фаворит - хозяева
+                        match_odds['1'] = max(1.3, 2.5 - goal_diff * 0.5)
+                        match_odds['X'] = min(5.0, 3.0 + goal_diff * 0.4)
+                        match_odds['2'] = min(8.0, 4.0 + goal_diff * 0.8)
+                    elif goal_diff < -0.5:  # Фаворит - гости
+                        match_odds['2'] = max(1.3, 2.5 + goal_diff * 0.5)
+                        match_odds['X'] = min(5.0, 3.0 - goal_diff * 0.4)
+                        match_odds['1'] = min(8.0, 4.0 - goal_diff * 0.8)
+                    else:  # Примерно равные шансы
+                        match_odds['X'] = 3.0
+                        match_odds['1'] = 2.5
+                        match_odds['2'] = 2.8
+                        
+                    # Округляем коэффициенты до 2 знаков после запятой
+                    match_odds = {k: round(v, 2) for k, v in match_odds.items()}    
                 
                 # Информация о матче для расчета ценности
                 match_info = {

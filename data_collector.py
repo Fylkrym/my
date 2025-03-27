@@ -7,7 +7,10 @@ import os
 import json
 import requests
 import logging
-from constants import *
+# Определяем константы напрямую
+LEAGUE_NAME = "bl1"  # bl1 - код для Бундеслиги
+CURRENT_SEASON = "2024"  # Сезон 2024/2025
+OPENLIGA_API_URL = "https://api.openligadb.de"
 from datetime import datetime, timedelta
 from config import *
 
@@ -90,7 +93,7 @@ class BundesligaDataCollector:
         logger.info("Получение информации о матчах Бундеслиги")
         
         # Формируем URL для запроса к API
-        url = f"{OPENLIGA_API_URL}/{LEAGUE_NAME}/{CURRENT_SEASON}"
+        url = f"{OPENLIGA_API_URL}/getmatchdata/{LEAGUE_NAME}/{CURRENT_SEASON}"
         
         try:
             response = requests.get(url)

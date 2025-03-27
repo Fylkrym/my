@@ -1,0 +1,421 @@
+{
+    "id": "002ba88bff01c863764b1b97b26bc96d",
+    "sport_key": "soccer_spain_la_liga",
+    "sport_title": "La Liga - Spain",
+    "commence_time": "2025-03-27T20:00:00Z",
+    "home_team": "Barcelona",
+    "away_team": "CA Osasuna",
+    "bookmakers": [
+        {
+            "key": "pinnacle",
+            "title": "Pinnacle",
+            "last_update": "2025-03-27T10:29:21Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:21Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.23
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 11.75
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.32
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "betclic",
+            "title": "Betclic",
+            "last_update": "2025-03-27T10:27:45Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:27:45Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.24
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 11.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 6.75
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "onexbet",
+            "title": "1xBet",
+            "last_update": "2025-03-27T10:29:23Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:23Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.25
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 12.3
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.34
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "winamax_fr",
+            "title": "Winamax (FR)",
+            "last_update": "2025-03-27T10:29:26Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:26Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.24
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 11.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 6.75
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "winamax_de",
+            "title": "Winamax (DE)",
+            "last_update": "2025-03-27T10:29:28Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:28Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.23
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 10.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 6.75
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "marathonbet",
+            "title": "Marathon Bet",
+            "last_update": "2025-03-27T10:29:22Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:22Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.23
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 11.5
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 6.85
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "tipico_de",
+            "title": "Tipico",
+            "last_update": "2025-03-27T10:29:24Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:24Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.2
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 10.5
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "williamhill",
+            "title": "William Hill",
+            "last_update": "2025-03-27T10:29:24Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:24Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.25
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 10.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 6.5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "nordicbet",
+            "title": "Nordic Bet",
+            "last_update": "2025-03-27T10:29:23Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:23Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.22
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 12.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "betfair_ex_eu",
+            "title": "Betfair",
+            "last_update": "2025-03-27T10:29:24Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:24Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.25
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 13.5
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.6
+                        }
+                    ]
+                },
+                {
+                    "key": "h2h_lay",
+                    "last_update": "2025-03-27T10:29:24Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.26
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 14.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.8
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "betonlineag",
+            "title": "BetOnline.ag",
+            "last_update": "2025-03-27T10:27:29Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:27:29Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.23
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 12.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.3
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "unibet_eu",
+            "title": "Unibet",
+            "last_update": "2025-03-27T10:29:23Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:23Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.23
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 12.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "matchbook",
+            "title": "Matchbook",
+            "last_update": "2025-03-27T10:29:21Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:21Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.25
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 13.5
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.6
+                        }
+                    ]
+                },
+                {
+                    "key": "h2h_lay",
+                    "last_update": "2025-03-27T10:29:21Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.26
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 14.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 8.0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "everygame",
+            "title": "Everygame",
+            "last_update": "2025-03-27T10:27:31Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:27:31Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.22
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 11.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 7.0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "coolbet",
+            "title": "Coolbet",
+            "last_update": "2025-03-27T10:29:24Z",
+            "markets": [
+                {
+                    "key": "h2h",
+                    "last_update": "2025-03-27T10:29:24Z",
+                    "outcomes": [
+                        {
+                            "name": "Barcelona",
+                            "price": 1.25
+                        },
+                        {
+                            "name": "CA Osasuna",
+                            "price": 12.0
+                        },
+                        {
+                            "name": "Draw",
+                            "price": 6.8
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

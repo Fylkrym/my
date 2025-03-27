@@ -7,7 +7,10 @@ import os
 import json
 import logging
 import traceback
-from constants import *
+# Определяем константы напрямую
+LEAGUE_NAME = "bl1"  # bl1 - код для Бундеслиги
+CURRENT_SEASON = "2024"  # Сезон 2024/2025
+OPENLIGA_API_URL = "https://api.openligadb.de"
 from datetime import datetime
 import pandas as pd
 
@@ -262,6 +265,18 @@ class BundesligaPredictor:
                 
                 # Сортируем по ценности (от большей к меньшей)
                 all_bets = sorted(all_bets, key=lambda x: x['value'], reverse=True)
+                
+                # Дополнительная проверка ставок с очень хорошей ценностью
+                for bet in all_bets:
+                    # Если ценность очень высокая (более 20%), но ставка не согласована,
+                    # стоит проверить реальные коэффициенты
+                    if bet['value'] > 0.2 and bet.get('has_contradiction', False):
+                        # Если это коэффициент из реального API, возможно, модель ошибается
+                        # Повысим приоритет таких ставок
+                        odds_file = f"{ODDS_DIR}/odds_{bet['match_id']}.json"
+                        if os.path.exists(odds_file):
+                            bet['value'] *= 1.2  # Увеличиваем ценность на 20%
+                            bet['from_real_odds'] = True  # Помечаем, что ставка основана на реальных коэффициентах
                 
                 # Выбираем лучшие ставки
                 suggested_bets = all_bets[:max_bets]
