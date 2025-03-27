@@ -1,0 +1,13 @@
+{
+    "match_id": "270bd497305946dc86e005935ca9c8ea",
+    "home_team": "FC Bayern München",
+    "away_team": "FC St. Pauli",
+    "date": "2025-03-29T14:30:00Z",
+    "odds": {
+        "1": 1.16,
+        "2": 15.0,
+        "X": 9.0
+    },
+    "timestamp": "2025-03-27T01:02:16.049846",
+    "source": "the_odds_api"
+}

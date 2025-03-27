@@ -1,0 +1,13 @@
+{
+    "match_id": "900655d6694c595f8b0fda84706bad04",
+    "home_team": "VfL Wolfsburg",
+    "away_team": "1. FC Heidenheim",
+    "date": "2025-03-29T14:30:00Z",
+    "odds": {
+        "2": 4.9,
+        "1": 1.64,
+        "X": 4.1
+    },
+    "timestamp": "2025-03-27T01:02:16.045746",
+    "source": "the_odds_api"
+}

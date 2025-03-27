@@ -1,0 +1,13 @@
+{
+    "match_id": "2d1de07d7ac740c1c6d5c8cb66ed0e77",
+    "home_team": "1. FC Union Berlin",
+    "away_team": "VfL Wolfsburg",
+    "date": "2025-04-06T15:30:00Z",
+    "odds": {
+        "1": 2.5,
+        "2": 2.9,
+        "X": 3.2
+    },
+    "timestamp": "2025-03-27T01:02:16.083037",
+    "source": "the_odds_api"
+}

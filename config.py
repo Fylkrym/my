@@ -1,57 +1,85 @@
 # config.py
 """
-Файл с настройками проекта для использования OpenLigaDB API
+Файл конфигурации для системы прогнозирования ставок на Бундеслигу
+с использованием The Odds API
 """
 
-# API для OpenLigaDB (бесплатный, без ключа)
-OPENLIGA_API_URL = "https://api.openligadb.de/getmatchdata"
+import os
+import logging
 
-# Настройки для Бундеслиги
-LEAGUE_NAME = "bl1"  # Сокращение для Bundesliga 1
-CURRENT_SEASON = "2024"  # Текущий сезон
+# Настройки The Odds API
+ODDS_API_KEY = "58a2f2727f4ce6fd686ed4f6d347c600"
+ODDS_API_BASE_URL = "https://api.the-odds-api.com/v4/sports"
+ODDS_SPORT = "soccer_germany_bundesliga"
+ODDS_REGIONS = "eu,uk"
+ODDS_MARKETS = "h2h"
+ODDS_FORMAT = "decimal"
 
-# Настройки для анализа
+# Пути к директориям
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, 'data')
+MATCHES_DIR = os.path.join(DATA_DIR, 'matches')
+ODDS_DIR = os.path.join(DATA_DIR, 'odds')
+PREDICTIONS_DIR = os.path.join(DATA_DIR, 'predictions')
+REPORTS_DIR = os.path.join(DATA_DIR, 'reports')
+CHARTS_DIR = os.path.join(DATA_DIR, 'charts')
+
+# Функция создания директорий
+def ensure_directories_exist():
+    """
+    Создает все необходимые директории для работы системы
+    """
+    directories = [
+        DATA_DIR, 
+        MATCHES_DIR, 
+        ODDS_DIR, 
+        PREDICTIONS_DIR, 
+        REPORTS_DIR, 
+        CHARTS_DIR
+    ]
+    
+    for directory in directories:
+        try:
+            os.makedirs(directory, exist_ok=True)
+            if not os.path.isdir(directory):
+                raise ValueError(f"{directory} не является директорией")
+            if not os.access(directory, os.W_OK):
+                raise PermissionError(f"Нет прав на запись в {directory}")
+        except Exception as e:
+            print(f"ОШИБКА при создании директории {directory}: {e}")
+            raise
+
+# Создаем директории при загрузке модуля
+ensure_directories_exist()
+
+# Настройки для анализа и прогнозирования
 MIN_ODDS_VALUE = 1.1  # Минимальное значение для коэффициента
 MAX_ODDS_VALUE = 10.0  # Максимальное значение для коэффициента
-VALUE_THRESHOLD = 0.1  # Минимальный порог ценности ставки (10%)
+VALUE_THRESHOLD = 0.15  # Порог ценности ставки (15%)
 
-# Настройки для улучшенной модели прогнозирования
-CONSISTENCY_CHECK = True  # Включить проверку согласованности
+# Настройки для прогнозирования
+CONSISTENCY_CHECK = True  # Проверка согласованности прогноза
 MIN_CONSISTENT_VALUE = 0.15  # Минимальная ценность для согласованных ставок
-FORCE_CONSISTENT_BETS = True  # Принудительно выбирать только согласованные ставки
-TOP_TEAMS_BOOST = 1.2  # Коэффициент усиления для топовых команд
-BOTTOM_TEAMS_PENALTY = 0.8  # Штраф для аутсайдеров
-BAYERN_HOME_BOOST = 1.3  # Дополнительное усиление для Баварии дома
-
-# Настройки для модели прогнозирования
-USE_HEAD_TO_HEAD = True  # Использовать историю личных встреч
-USE_EXTENDED_MARKETS = True  # Использовать расширенные рынки ставок (тоталы, форы)
-MAX_H2H_MATCHES = 10  # Максимальное количество матчей для анализа личных встреч
-H2H_WEIGHT = 0.2  # Вес истории личных встреч в прогнозе
+FORCE_CONSISTENT_BETS = True  # Выбирать только согласованные ставки
 
 # Настройки для управления банкроллом
-BANK_INITIAL = 1000  # Начальный банк (в рублях/долларах/евро)
-BET_SIZE_PERCENT = 2  # Размер ставки (% от банка)
+BANK_INITIAL = 1000  # Начальный банк
+BET_SIZE_PERCENT = 2  # Размер ставки в % от банка
 MAX_DAILY_BETS = 5  # Максимальное количество ставок в день
-MIN_VALUE_FOR_BET = 0.15  # Минимальная ценность для размещения ставки (15%)
+MIN_VALUE_FOR_BET = 0.15  # Минимальная ценность для ставки
 VALUE_BASED_SIZING = True  # Регулировать размер ставки в зависимости от ценности
 
-# Пути к файлам данных
-DATA_DIR = "data"
-MATCHES_DIR = f"{DATA_DIR}/matches"
-ODDS_DIR = f"{DATA_DIR}/odds"
-PREDICTIONS_DIR = f"{DATA_DIR}/predictions"
-REPORTS_DIR = f"{DATA_DIR}/reports"
-CHARTS_DIR = f"{DATA_DIR}/charts"
+# Настройки Telegram
+TELEGRAM_NOTIFICATIONS = True
+TELEGRAM_BOT_TOKEN = "7544739929:AAEGvj2WqaglYh3xrH1Ec_djcfiwPQHs2VY"
+TELEGRAM_CHAT_ID = "-4767450455"
 
-# Настройки для Telegram уведомлений
-TELEGRAM_NOTIFICATIONS = True  # Включить/выключить уведомления в Telegram
-TELEGRAM_BOT_TOKEN = "7544739929:AAEGvj2WqaglYh3xrH1Ec_djcfiwPQHs2VY"  # Токен вашего Telegram бота
-TELEGRAM_CHAT_ID = "-4767450455"  # ID чата для отправки уведомлений
-
-# Настройки для визуализации
-VISUALIZATION = True  # Включить визуализацию результатов
-
-# Настройки для логирования
+# Настройки логирования
 LOG_LEVEL = "INFO"
-LOG_FILE = "bundesliga_predictor.log"
+LOG_FILE = os.path.join(BASE_DIR, 'bundesliga_predictor.log')
+
+# Настройки визуализации
+VISUALIZATION = True
+
+# Текущий сезон
+CURRENT_SEASON = "2024"

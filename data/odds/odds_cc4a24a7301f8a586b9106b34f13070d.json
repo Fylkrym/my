@@ -1,0 +1,13 @@
+{
+    "match_id": "cc4a24a7301f8a586b9106b34f13070d",
+    "home_team": "FC St. Pauli",
+    "away_team": "Borussia Monchengladbach",
+    "date": "2025-04-06T13:30:00Z",
+    "odds": {
+        "2": 2.85,
+        "1": 2.3,
+        "X": 3.35
+    },
+    "timestamp": "2025-03-27T01:02:16.080661",
+    "source": "the_odds_api"
+}

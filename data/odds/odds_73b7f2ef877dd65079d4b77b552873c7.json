@@ -1,0 +1,13 @@
+{
+    "match_id": "73b7f2ef877dd65079d4b77b552873c7",
+    "home_team": "Werder Bremen",
+    "away_team": "Eintracht Frankfurt",
+    "date": "2025-04-05T16:30:00Z",
+    "odds": {
+        "2": 2.5,
+        "1": 2.65,
+        "X": 3.6
+    },
+    "timestamp": "2025-03-27T01:02:16.078625",
+    "source": "the_odds_api"
+}

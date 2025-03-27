@@ -1,0 +1,13 @@
+{
+    "match_id": "ee2cc02da44d3a6c0dc618e8011daab3",
+    "home_team": "Eintracht Frankfurt",
+    "away_team": "VfB Stuttgart",
+    "date": "2025-03-29T17:30:00Z",
+    "odds": {
+        "1": 2.45,
+        "2": 2.75,
+        "X": 3.7
+    },
+    "timestamp": "2025-03-27T01:02:16.056757",
+    "source": "the_odds_api"
+}

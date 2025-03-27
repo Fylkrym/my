@@ -1,0 +1,13 @@
+{
+    "match_id": "774e12e31a16c24aa1f1296d2cb29ac1",
+    "home_team": "FC Augsburg",
+    "away_team": "FC Bayern München",
+    "date": "2025-04-04T18:30:00Z",
+    "odds": {
+        "1": 7.0,
+        "2": 1.42,
+        "X": 4.8
+    },
+    "timestamp": "2025-03-27T01:02:16.062754",
+    "source": "the_odds_api"
+}

@@ -7,6 +7,7 @@ import os
 import json
 import logging
 import traceback
+from constants import *
 from datetime import datetime
 import pandas as pd
 
@@ -449,9 +450,9 @@ class BundesligaPredictor:
     def run_full_cycle_improved(self):
         """
         Запускает полный улучшенный цикл работы системы с визуализациями и уведомлениями
-        
+    
         Returns:
-            dict: Результаты работы системы
+        dict: Результаты работы системы
         """
         logger.info("Запуск полного цикла работы системы")
         print("Запуск полного цикла работы системы")
@@ -459,15 +460,41 @@ class BundesligaPredictor:
         try:
             # Сбор данных
             data = self.collect_data_improved()
+        
             if data is None:
-                return {'error': 'Ошибка при сборе данных'}
-            
+                print("ОШИБКА: Не удалось собрать данные для анализа")
+                # Попробуем создать минимальный набор данных вручную
+                print("Пытаемся создать минимальный набор данных вручную...")
+                try:
+                    # Импортируем сборщик данных и получаем матчи
+                    from data_collector import BundesligaDataCollector
+                    collector = BundesligaDataCollector()
+                    _, future_matches = collector.get_matches(past=False, future=True)
+                
+                    if future_matches:
+                        print(f"Получено {len(future_matches)} будущих матчей напрямую")
+                    
+                        # Сохраняем их принудительно
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        os.makedirs(MATCHES_DIR, exist_ok=True)
+                        future_match_file = f"{MATCHES_DIR}/future_matches_{timestamp}.json"
+                    
+                        with open(future_match_file, 'w', encoding='utf-8') as f:
+                            json.dump(future_matches, f, indent=4, ensure_ascii=False)
+                    
+                        print(f"Матчи сохранены в {future_match_file}")
+                        # Не делаем return, продолжаем выполнение
+                except Exception as e:
+                    print(f"Не удалось получить данные вручную: {e}")
+                    return {'error': 'Ошибка при сборе данных'}
+        
             # Генерация прогнозов
             print("Создание прогнозов...")
             predictions = self.generate_predictions()
+        
             if not predictions:
                 return {'error': 'Не удалось создать прогнозы'}
-            
+        
             # Визуализация результатов, если включено
             if VISUALIZATION and hasattr(self, 'visualizer'):
                 try:
@@ -483,11 +510,11 @@ class BundesligaPredictor:
                 except Exception as e:
                     logger.error(f"Ошибка при создании визуализаций: {e}")
                     print(f"Ошибка при создании визуализаций: {e}")
-            
+        
             # Предложение ставок с улучшенными проверками
             print("Выбор ценных ставок...")
             suggested_bets = self.suggest_bets(predictions, min_value=MIN_VALUE_FOR_BET, max_bets=MAX_DAILY_BETS)
-            
+        
             # Отправка уведомлений, если включено
             if hasattr(self, 'notifier') and self.notifier:
                 try:
@@ -502,11 +529,11 @@ class BundesligaPredictor:
                 except Exception as e:
                     logger.error(f"Ошибка при отправке уведомлений: {e}")
                     print(f"Ошибка при отправке уведомлений: {e}")
-            
+        
             # Размещение ставок (имитация)
             print("Размещение ставок...")
             placed_bets = self.place_bets(suggested_bets)
-            
+        
             # Генерация отчета о производительности
             if VISUALIZATION and hasattr(self, 'visualizer'):
                 try:
@@ -518,7 +545,7 @@ class BundesligaPredictor:
                 except Exception as e:
                     logger.error(f"Ошибка при создании отчета: {e}")
                     print(f"Ошибка при создании отчета: {e}")
-            
+        
             return {
                 'predictions_count': len(predictions),
                 'suggested_bets': suggested_bets,
@@ -529,70 +556,68 @@ class BundesligaPredictor:
             print(f"КРИТИЧЕСКАЯ ОШИБКА в цикле: {e}")
             logger.error(f"Критическая ошибка в цикле: {e}")
             traceback.print_exc()
-            return {'error': str(e)}
-
-
-# Запуск полного цикла при запуске скрипта напрямую
+            return {'error': str(e)} 
+    # Запуск полного цикла при запуске скрипта напрямую
 if __name__ == "__main__":
-    print("Программа запущена!")
-    try:
-        print("=" * 50)
-        print("ЗАПУСК СИСТЕМЫ ПРОГНОЗИРОВАНИЯ БУНДЕСЛИГИ")
-        print("=" * 50)
-        
-        # Проверяем директории
-        print(f"Проверка директорий:")
-        for dir_path in [DATA_DIR, MATCHES_DIR, ODDS_DIR, PREDICTIONS_DIR, CHARTS_DIR, REPORTS_DIR]:
-            exists = os.path.exists(dir_path)
-            print(f" - {dir_path}: {'существует' if exists else 'ОТСУТСТВУЕТ'}")
-            if not exists:
-                os.makedirs(dir_path, exist_ok=True)
-                print(f"   Создана директория {dir_path}")
-        
-        print("Создание экземпляра предиктора...")
-        predictor = BundesligaPredictor()
-        print("Экземпляр предиктора создан успешно!")
-        
-        print("Запуск цикла анализа...")
-        results = predictor.run_full_cycle_improved()
-        print("Цикл анализа завершен!")
-        
-        print("\n" + "=" * 30)
-        print("РЕЗУЛЬТАТЫ РАБОТЫ СИСТЕМЫ")
-        print("=" * 30)
-        
-        if 'error' in results:
-            print(f"Произошла ошибка: {results['error']}")
-        else:
-            print(f"Создано прогнозов: {results.get('predictions_count', 0)}")
+        print("Программа запущена!")
+        try:
+            print("=" * 50)
+            print("ЗАПУСК СИСТЕМЫ ПРОГНОЗИРОВАНИЯ БУНДЕСЛИГИ")
+            print("=" * 50)
             
-            # Информация о предложенных ставках
-            suggested_bets = results.get('suggested_bets', [])
-            if suggested_bets:
-                print("\nПредложенные ставки:")
-                for i, bet in enumerate(suggested_bets, 1):
-                    outcome_name = "Победа хозяев" if bet['outcome'] == '1' else "Ничья" if bet['outcome'] == 'X' else "Победа гостей"
-                    print(f"{i}. {bet['date']} - {bet['home_team']} vs {bet['away_team']}")
-                    print(f"   Исход: {outcome_name}, Коэф: {bet['odds']}, Ценность: {bet['value'] * 100:.1f}%")
-                    print(f"   Ожидаемые голы: {bet['home_team']} - {bet['expected_goals']['home']}, {bet['away_team']} - {bet['expected_goals']['away']}")
+            # Проверяем директории
+            print(f"Проверка директорий:")
+            for dir_path in [DATA_DIR, MATCHES_DIR, ODDS_DIR, PREDICTIONS_DIR, CHARTS_DIR, REPORTS_DIR]:
+                exists = os.path.exists(dir_path)
+                print(f" - {dir_path}: {'существует' if exists else 'ОТСУТСТВУЕТ'}")
+                if not exists:
+                    os.makedirs(dir_path, exist_ok=True)
+                    print(f"   Создана директория {dir_path}")
+            
+            print("Создание экземпляра предиктора...")
+            predictor = BundesligaPredictor()
+            print("Экземпляр предиктора создан успешно!")
+            
+            print("Запуск цикла анализа...")
+            results = predictor.run_full_cycle_improved()
+            print("Цикл анализа завершен!")
+            
+            print("\n" + "=" * 30)
+            print("РЕЗУЛЬТАТЫ РАБОТЫ СИСТЕМЫ")
+            print("=" * 30)
+            
+            if 'error' in results:
+                print(f"Произошла ошибка: {results['error']}")
             else:
-                print("\nНет предложенных ставок.")
+                print(f"Создано прогнозов: {results.get('predictions_count', 0)}")
+                
+                # Информация о предложенных ставках
+                suggested_bets = results.get('suggested_bets', [])
+                if suggested_bets:
+                    print("\nПредложенные ставки:")
+                    for i, bet in enumerate(suggested_bets, 1):
+                        outcome_name = "Победа хозяев" if bet['outcome'] == '1' else "Ничья" if bet['outcome'] == 'X' else "Победа гостей"
+                        print(f"{i}. {bet['date']} - {bet['home_team']} vs {bet['away_team']}")
+                        print(f"   Исход: {outcome_name}, Коэф: {bet['odds']}, Ценность: {bet['value'] * 100:.1f}%")
+                        print(f"   Ожидаемые голы: {bet['home_team']} - {bet['expected_goals']['home']}, {bet['away_team']} - {bet['expected_goals']['away']}")
+                else:
+                    print("\nНет предложенных ставок.")
+                
+                # Информация о размещенных ставках
+                placed_bets = results.get('placed_bets', [])
+                if placed_bets:
+                    print("\nРазмещенные ставки:")
+                    for i, bet in enumerate(placed_bets, 1):
+                        outcome_name = "Победа хозяев" if bet['outcome'] == '1' else "Ничья" if bet['outcome'] == 'X' else "Победа гостей"
+                        print(f"{i}. {bet['date']} - {bet['home_team']} vs {bet['away_team']}")
+                        print(f"   Исход: {outcome_name}, Коэф: {bet['odds']}, Сумма: {bet['amount']}, Потенциальный выигрыш: {bet['potential_win']}")
+                else:
+                    print("\nНет размещенных ставок.")
+                
+                # Информация о банке
+                print(f"\nТекущий банк: {results.get('current_bank', 0)}")
             
-            # Информация о размещенных ставках
-            placed_bets = results.get('placed_bets', [])
-            if placed_bets:
-                print("\nРазмещенные ставки:")
-                for i, bet in enumerate(placed_bets, 1):
-                    outcome_name = "Победа хозяев" if bet['outcome'] == '1' else "Ничья" if bet['outcome'] == 'X' else "Победа гостей"
-                    print(f"{i}. {bet['date']} - {bet['home_team']} vs {bet['away_team']}")
-                    print(f"   Исход: {outcome_name}, Коэф: {bet['odds']}, Сумма: {bet['amount']}, Потенциальный выигрыш: {bet['potential_win']}")
-            else:
-                print("\nНет размещенных ставок.")
-            
-            # Информация о банке
-            print(f"\nТекущий банк: {results.get('current_bank', 0)}")
-        
-    except Exception as e:
-        print(f"КРИТИЧЕСКАЯ ОШИБКА ПРИ ЗАПУСКЕ: {e}")
-        traceback.print_exc()
-        print("Программа аварийно завершена")
+        except Exception as e:
+            print(f"КРИТИЧЕСКАЯ ОШИБКА ПРИ ЗАПУСКЕ: {e}")
+            traceback.print_exc()
+            print("Программа аварийно завершена")

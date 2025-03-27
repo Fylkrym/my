@@ -3,6 +3,7 @@
 Модуль для анализа собранных данных из OpenLigaDB и создания прогнозов
 """
 
+from team_mappings import normalize_team_name  # Добавьте этот импорт в начало файла
 import os
 import json
 import pandas as pd
@@ -72,6 +73,9 @@ class BundesligaAnalyzer:
                 # Преобразуем в DataFrame для удобства анализа
                 matches_data = []
                 
+                # Добавим отладочную печать
+                teams_not_found = set()
+                
                 for match in past_matches:
                     # Извлекаем основные данные
                     match_id = match.get('matchID')
@@ -81,8 +85,21 @@ class BundesligaAnalyzer:
                     home_team = match.get('team1', {})
                     away_team = match.get('team2', {})
                     
+                    home_team_name = home_team.get('teamName', '')
+                    away_team_name = away_team.get('teamName', '')
+                    
+                    # Нормализуем названия команд
+                    home_normalized = normalize_team_name(home_team_name)
+                    away_normalized = normalize_team_name(away_team_name)
+                    
                     home_team_id = home_team.get('teamId') if home_team else None
                     away_team_id = away_team.get('teamId') if away_team else None
+                    
+                    # Проверка сопоставления
+                    if home_normalized not in [team['team_name'] for team in teams]:
+                        teams_not_found.add(home_normalized)
+                    if away_normalized not in [team['team_name'] for team in teams]:
+                        teams_not_found.add(away_normalized)
                     
                     # Результаты
                     match_results = match.get('matchResults', [])
@@ -546,10 +563,34 @@ class BundesligaAnalyzer:
         # Находим последний файл с будущими матчами
         future_match_files = glob.glob(f"{MATCHES_DIR}/future_matches_*.json")
         if not future_match_files:
-            logger.warning("Файлы с будущими матчами не найдены")
-            return []
+            logger.warning("Файлы с будущими матчами не найдены, пытаемся получить данные")
+            try:
+                # Импортируем сборщик данных и получаем матчи
+                from data_collector import BundesligaDataCollector
+                collector = BundesligaDataCollector()
+                _, future_matches = collector.get_matches(past=False, future=True)
         
-        latest_file = max(future_match_files, key=os.path.getctime)
+                if not future_matches:
+                    logger.warning("Не удалось получить будущие матчи")
+                    return []
+        
+                # Используем полученные матчи напрямую
+                print(f"Получено {len(future_matches)} будущих матчей для анализа")
+                logger.info(f"Получено {len(future_matches)} будущих матчей для анализа")
+            except Exception as e:
+                logger.error(f"Ошибка при получении будущих матчей: {e}")
+                return []
+        else:
+            latest_file = max(future_match_files, key=os.path.getctime)
+    
+            try:
+                with open(latest_file, 'r', encoding='utf-8') as f:
+                    future_matches = json.load(f)
+        
+                logger.info(f"Загружено {len(future_matches)} предстоящих матчей для анализа из файла")
+            except Exception as e:
+                logger.error(f"Ошибка при загрузке предстоящих матчей: {e}")
+                return []
         
         try:
             with open(latest_file, 'r', encoding='utf-8') as f:

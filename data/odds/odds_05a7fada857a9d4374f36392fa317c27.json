@@ -1,0 +1,13 @@
+{
+    "match_id": "05a7fada857a9d4374f36392fa317c27",
+    "home_team": "Holstein Kiel",
+    "away_team": "Werder Bremen",
+    "date": "2025-03-29T14:30:00Z",
+    "odds": {
+        "1": 3.45,
+        "2": 2.05,
+        "X": 3.8
+    },
+    "timestamp": "2025-03-27T01:02:16.054707",
+    "source": "the_odds_api"
+}

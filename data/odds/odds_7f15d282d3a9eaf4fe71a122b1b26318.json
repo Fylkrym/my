@@ -1,0 +1,13 @@
+{
+    "match_id": "7f15d282d3a9eaf4fe71a122b1b26318",
+    "home_team": "TSG Hoffenheim",
+    "away_team": "FC Augsburg",
+    "date": "2025-03-29T14:30:00Z",
+    "odds": {
+        "2": 3.05,
+        "1": 2.45,
+        "X": 3.3
+    },
+    "timestamp": "2025-03-27T01:02:16.047591",
+    "source": "the_odds_api"
+}

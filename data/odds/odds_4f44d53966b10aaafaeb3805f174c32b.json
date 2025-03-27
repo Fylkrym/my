@@ -1,0 +1,13 @@
+{
+    "match_id": "4f44d53966b10aaafaeb3805f174c32b",
+    "home_team": "Borussia Dortmund",
+    "away_team": "FSV Mainz 05",
+    "date": "2025-03-30T15:30:00Z",
+    "odds": {
+        "1": 1.64,
+        "2": 4.63,
+        "X": 4.07
+    },
+    "timestamp": "2025-03-27T01:02:16.060753",
+    "source": "the_odds_api"
+}

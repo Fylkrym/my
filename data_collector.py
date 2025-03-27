@@ -7,6 +7,7 @@ import os
 import json
 import requests
 import logging
+from constants import *
 from datetime import datetime, timedelta
 from config import *
 
@@ -43,7 +44,7 @@ class BundesligaDataCollector:
         logger.info("Получение информации о командах Бундеслиги")
         
         # Формируем URL для запроса к API
-        url = f"{OPENLIGA_API_URL}/getavailableteams/{LEAGUE_NAME}/{CURRENT_SEASON}"
+        url = f"https://api.openligadb.de/getavailableteams/{LEAGUE_NAME}/{CURRENT_SEASON}"
         
         try:
             response = requests.get(url)
@@ -106,13 +107,31 @@ class BundesligaDataCollector:
             for match in all_matches:
                 # Парсим дату матча
                 match_time_str = match.get('MatchDateTime')
-                match_time = datetime.fromisoformat(match_time_str.replace('Z', '+00:00'))
-                
-                # Если матч уже состоялся и имеет результаты
-                if match_time < current_time and match.get('MatchResults'):
-                    past_matches.append(match)
+                if match_time_str:
+                   try:
+                      match_time = datetime.fromisoformat(match_time_str.replace('Z', '+00:00'))
+                   except ValueError:
+                       # Если формат даты неверный, используем текущее время + 30 дней для будущих матчей
+                       match_time = current_time + timedelta(days=30)
                 else:
+                   # Если дата отсутствует, используем текущее время + 30 дней
+                   match_time = current_time + timedelta(days=30)
+                
+                # Проверяем по дате и наличию результатов
+                has_results = bool(match.get('MatchResults', []))
+                is_past = match_time < current_time
+
+                if is_past and has_results:
+                    # Если матч в прошлом и есть результаты - это прошедший матч
+                    past_matches.append(match)
+                elif not is_past:
+                    # Если матч в будущем - это будущий матч даже без результатов
                     future_matches.append(match)
+                    logger.debug(f"Добавлен будущий матч: {match.get('team1', {}).get('teamName', '')} vs {match.get('team2', {}).get('teamName', '')}")
+                else:
+                    # Если матч в прошлом, но нет результатов - считаем будущим (возможно дата не точная)
+                    future_matches.append(match)
+                    logger.debug(f"Добавлен прошедший матч без результатов как будущий: {match.get('team1', {}).get('teamName', '')} vs {match.get('team2', {}).get('teamName', '')}")
             
             # Сохраняем прошедшие матчи, если нужно
             if past and past_matches:
@@ -143,18 +162,31 @@ class BundesligaDataCollector:
     def collect_all_data(self):
         """
         Собирает все необходимые данные для анализа
-        
+            
         Returns:
-            dict: Словарь с собранными данными
+                dict: Словарь с собранными данными
         """
         logger.info("Начинаем сбор всех данных для анализа")
-        
+            
         # Получаем информацию о командах
         teams = self.get_teams()
-        
+            
         # Получаем информацию о матчах
         past_matches, future_matches = self.get_matches()
+        print(f"Найдено {len(past_matches)} прошедших и {len(future_matches)} будущих матчей")
+
+        # И перед сохранением будущих матчей добавьте проверку:
+        if future_matches:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            os.makedirs(MATCHES_DIR, exist_ok=True)  # Убедимся, что директория точно существует
+            future_match_file = f"{MATCHES_DIR}/future_matches_{timestamp}.json"
         
+            with open(future_match_file, 'w', encoding='utf-8') as f:
+                json.dump(future_matches, f, indent=4, ensure_ascii=False)
+        
+            print(f"Информация о {len(future_matches)} предстоящих матчах сохранена в {future_match_file}")
+            logger.info(f"Информация о {len(future_matches)} предстоящих матчах сохранена в {future_match_file}")
+            
         return {
             'teams': teams,
             'past_matches': past_matches,

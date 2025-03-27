@@ -1,0 +1,13 @@
+{
+    "match_id": "dc24f903c4e2284a9e9a9d60c189bfdb",
+    "home_team": "SC Freiburg",
+    "away_team": "1. FC Union Berlin",
+    "date": "2025-03-30T13:30:00Z",
+    "odds": {
+        "1": 2.0,
+        "2": 3.85,
+        "X": 3.4
+    },
+    "timestamp": "2025-03-27T01:02:16.058757",
+    "source": "the_odds_api"
+}

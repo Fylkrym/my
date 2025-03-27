@@ -1,0 +1,13 @@
+{
+    "match_id": "deb496dd7f8ea33e6bfeab237a38bab0",
+    "home_team": "Bayer Leverkusen",
+    "away_team": "VfL Bochum",
+    "date": "2025-03-28T19:30:00Z",
+    "odds": {
+        "1": 1.23,
+        "2": 11.0,
+        "X": 6.5
+    },
+    "timestamp": "2025-03-27T01:02:16.043567",
+    "source": "the_odds_api"
+}

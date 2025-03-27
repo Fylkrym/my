@@ -209,6 +209,36 @@ class OddsCollector:
             traceback.print_exc()
             return {}
     
+    def get_odds_from_api(self):
+        """
+        Получает коэффициенты через The Odds API
+        
+        Returns:
+            dict: Словарь с коэффициентами
+        """
+        try:
+            # Пытаемся импортировать модуль
+            from the_odds_api_parser import get_odds
+            
+            print("Получение коэффициентов через The Odds API...")
+            logger.info("Получение коэффициентов через The Odds API")
+            
+            # Ваш API ключ
+            API_KEY = "58a2f2727f4ce6fd686ed4f6d347c600"
+            
+            # Получаем данные
+            odds_data = get_odds(API_KEY)
+            
+            if odds_data and len(odds_data) > 0:
+                logger.info(f"Получены коэффициенты для {len(odds_data)} матчей через The Odds API")
+                return odds_data
+            else:
+                logger.warning("Не удалось получить данные через The Odds API")
+                return {}
+        except Exception as e:
+            logger.error(f"Ошибка при получении коэффициентов через The Odds API: {e}")
+            return {}
+    
     def collect_odds_for_all_matches(self):
         """
         Собирает коэффициенты для всех будущих матчей
@@ -219,86 +249,29 @@ class OddsCollector:
         logger.info("Начинаем сбор коэффициентов для всех матчей")
         print("Начинаем сбор коэффициентов для всех матчей...")
         
-        # Метод 1: Пробуем использовать The Odds API Parser
-        api_parser_odds = self.try_odds_api_parser()
-        if api_parser_odds:
-            logger.info("Используем коэффициенты из The Odds API Parser")
-            print("Используем коэффициенты из The Odds API Parser")
-            return api_parser_odds
-        
-    # Метод 2: Пробуем напрямую использовать The Odds API
-    api_odds = self.get_odds_from_api()
-    if api_odds:
-        logger.info("Используем коэффициенты из The Odds API")
-        print("Используем коэффициенты из The Odds API")
-        return api_odds
-        
-    # Метод 3: Пытаемся получить реальные коэффициенты через парсер
-    real_odds = self.collect_real_odds()
-    if real_odds:
-        logger.info("Используем реальные коэффициенты из парсера")
-        print("Используем реальные коэффициенты из парсера")
-        return real_odds
-    
-    # Если все методы не сработали, генерируем свои
-    logger.info("Все методы получения реальных коэффициентов не сработали. Генерация синтетических коэффициентов.")
-    print("ВНИМАНИЕ: Все методы получения реальных коэффициентов не сработали!")
-    print("Генерация синтетических коэффициентов...")
+        try:
             
-            # (остальной код метода)
+            # Метод 1: Пробуем напрямую использовать The Odds API
+            api_odds = self.get_odds_from_api()
+            if api_odds:
+                logger.info("Используем коэффициенты из The Odds API")
+                print("Используем коэффициенты из The Odds API")
+                return api_odds
 
-        else:
-            # (код для обработки ошибок)
-            return {}
-    except Exception as e:
-        # (код для обработки исключений)
-        return {}
-    
-    def try_odds_api_parser(self):
-        """
-        Пытается получить коэффициенты через отдельный парсер The Odds API
-    
-        Returns:
-            dict: Словарь с коэффициентами для матчей
-        """
-        try:
-            from the_odds_api_parser import get_odds
-        
-            print("Получение коэффициентов через the_odds_api_parser...")
-            logger.info("Получение коэффициентов через the_odds_api_parser")
-        
-            API_KEY = "58a2f2727f4ce6fd686ed4f6d347c600"
-            odds_data = get_odds(API_KEY)
-        
-            if odds_data and len(odds_data) > 0:
-               # (остальной код метода)
-                return result_data
-            else:
-                print("Не удалось получить данные через the_odds_api_parser")
+            
+            # Если все методы не сработали, генерируем свои
+            logger.info("Все методы получения реальных коэффициентов не сработали. Генерация синтетических коэффициентов.")
+            print("ВНИМАНИЕ: Все методы получения реальных коэффициентов не сработали!")
+            print("Генерация синтетических коэффициентов...")
+            
+            # Находим последний файл с будущими матчами
+            future_match_files = glob.glob(f"{MATCHES_DIR}/future_matches_*.json")
+            if not future_match_files:
+                logger.warning("Файлы с будущими матчами не найдены")
                 return {}
-        except Exception as e:
-            logger.error(f"Ошибка при использовании the_odds_api_parser: {e}")
-            print(f"Ошибка при использовании the_odds_api_parser: {e}")
-            return {}
-        
-        if real_odds:
-            logger.info("Используем реальные коэффициенты")
-            print("Используем реальные коэффициенты")
-            return real_odds
-        
-        # Если реальные коэффициенты не получены, генерируем свои
-        logger.info("Генерация коэффициентов")
-        print("Генерация коэффициентов")
-        
-        # Находим последний файл с будущими матчами
-        future_match_files = glob.glob(f"{MATCHES_DIR}/future_matches_*.json")
-        if not future_match_files:
-            logger.warning("Файлы с будущими матчами не найдены")
-            return {}
-        
-        latest_file = max(future_match_files, key=os.path.getctime)
-        
-        try:
+            
+            latest_file = max(future_match_files, key=os.path.getctime)
+            
             with open(latest_file, 'r', encoding='utf-8') as f:
                 future_matches = json.load(f)
             
@@ -342,9 +315,41 @@ class OddsCollector:
             
             logger.info(f"Сбор коэффициентов завершен. Обработано {len(odds_data)} матчей")
             return odds_data
-        
+            
         except Exception as e:
             logger.error(f"Ошибка при сборе коэффициентов: {e}")
+            return {}
+    
+    def try_odds_api_parser(self):
+        """
+        Пытается получить коэффициенты через отдельный парсер The Odds API
+    
+        Returns:
+            dict: Словарь с коэффициентами для матчей
+        """
+        try:
+            from the_odds_api_parser import get_odds
+        
+            print("Получение коэффициентов через the_odds_api_parser...")
+            logger.info("Получение коэффициентов через the_odds_api_parser")
+        
+            API_KEY = "58a2f2727f4ce6fd686ed4f6d347c600"
+            odds_data = get_odds(API_KEY)
+        
+            if odds_data and len(odds_data) > 0:
+                # Преобразуем данные в нужный формат если необходимо
+                result_data = {}
+                for match_id, match_data in odds_data.items():
+                    result_data[match_id] = match_data
+                
+                logger.info(f"Получены коэффициенты для {len(result_data)} матчей через the_odds_api_parser")
+                return result_data
+            else:
+                print("Не удалось получить данные через the_odds_api_parser")
+                return {}
+        except Exception as e:
+            logger.error(f"Ошибка при использовании the_odds_api_parser: {e}")
+            print(f"Ошибка при использовании the_odds_api_parser: {e}")
             return {}
     
     def generate_realistic_odds(self, match_data, teams_data):
@@ -415,8 +420,7 @@ class OddsCollector:
                 away_win_prob = min(0.78, away_win_prob * 1.1)
                 home_win_prob = max(0.12, home_win_prob * 0.9)
             draw_prob = 1 - home_win_prob - away_win_prob
-            
-        # Очень конкретные матчи
+            # Очень конкретные матчи
         if home_team_name == 'FC Bayern München' and away_team_name == 'FC St. Pauli':
             home_win_prob = 0.88
             draw_prob = 0.08

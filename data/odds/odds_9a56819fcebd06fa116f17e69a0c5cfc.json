@@ -1,0 +1,13 @@
+{
+    "match_id": "9a56819fcebd06fa116f17e69a0c5cfc",
+    "home_team": "Borussia Monchengladbach",
+    "away_team": "RB Leipzig",
+    "date": "2025-03-29T14:30:00Z",
+    "odds": {
+        "1": 2.95,
+        "2": 2.35,
+        "X": 3.4
+    },
+    "timestamp": "2025-03-27T01:02:16.051935",
+    "source": "the_odds_api"
+}
